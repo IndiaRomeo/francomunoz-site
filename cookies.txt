@@ -1,5 +1,0 @@
-# HTTrack Website Copier Cookie File
-# This file format is compatible with Netscape cookies
-francomunoz.com	TRUE	/	FALSE	1999999999	_fbp	fb.1.1.78536492156E%2B12.709456377.AQECAQIB
-francomunoz.com	TRUE	/	FALSE	1999999999	SameSite	Lax
-
