@@ -4,80 +4,199 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <meta name="robots" content="noindex, nofollow" />
-<title>Clientes registrados</title>
+<title>Clientes registrados | Franco Muñoz Law Firm</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@400;600;700;800&display=swap" rel="stylesheet" />
 <style>
+	:root {
+		--blue: #004eab;
+		--blue-dark: #003a80;
+		--blue-tint: #eaf1fb;
+		--green: #01a54f;
+		--green-tint: #e6f8ee;
+		--ink: #16202b;
+		--muted: #6b7686;
+		--border: #e4e8ee;
+		--bg: #f4f6f9;
+	}
 	* { box-sizing: border-box; }
 	body {
 		margin: 0;
-		background: #0f1115;
-		font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
-		color: #e5e7eb;
+		background: var(--bg);
+		font-family: "Nunito Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+		color: var(--ink);
 	}
 	header {
 		display: flex;
 		align-items: center;
 		justify-content: space-between;
-		padding: 18px 28px;
-		border-bottom: 1px solid #262b36;
+		gap: 16px;
+		padding: 16px 28px;
+		background: #fff;
+		border-bottom: 1px solid var(--border);
+		position: sticky;
+		top: 0;
+		z-index: 5;
 	}
-	header h1 { font-size: 18px; margin: 0; }
+	.brand { display: flex; align-items: center; gap: 12px; }
+	.brand img { height: 30px; object-fit: contain; }
+	.brand-text { line-height: 1.15; }
+	.brand-text .title { font-weight: 800; font-size: 15px; }
+	.brand-text .subtitle { font-size: 12px; color: var(--muted); font-weight: 600; }
 	#logout-btn {
-		background: transparent;
-		border: 1px solid #2c313d;
-		color: #aab0bc;
-		padding: 8px 14px;
-		border-radius: 6px;
-		cursor: pointer;
-		font-size: 13px;
-	}
-	#logout-btn:hover { border-color: #f87171; color: #f87171; }
-	main { padding: 24px 28px; }
-	#status { color: #aab0bc; font-size: 14px; margin-bottom: 16px; }
-	table {
-		width: 100%;
-		border-collapse: collapse;
-		background: #171a21;
-		border: 1px solid #262b36;
+		background: #fff;
+		border: 1.5px solid var(--border);
+		color: var(--ink);
+		padding: 9px 16px;
 		border-radius: 8px;
+		cursor: pointer;
+		font-family: inherit;
+		font-weight: 700;
+		font-size: 13px;
+		transition: border-color 0.15s ease, color 0.15s ease;
+	}
+	#logout-btn:hover { border-color: #d64545; color: #d64545; }
+
+	main { max-width: 1120px; margin: 0 auto; padding: 28px 24px 60px; }
+
+	.stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 14px; margin-bottom: 22px; }
+	.stat-card {
+		background: #fff;
+		border: 1px solid var(--border);
+		border-radius: 12px;
+		padding: 16px 18px;
+	}
+	.stat-card .label { font-size: 12px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.04em; }
+	.stat-card .value { font-size: 28px; font-weight: 800; color: var(--blue); margin-top: 4px; }
+	.stat-card.accent .value { color: var(--green); }
+
+	.toolbar { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 14px; flex-wrap: wrap; }
+	.search-wrap { position: relative; flex: 1; min-width: 220px; max-width: 360px; }
+	.search-wrap svg { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); opacity: 0.45; }
+	#search {
+		width: 100%;
+		padding: 10px 14px 10px 36px;
+		border-radius: 9px;
+		border: 1.5px solid var(--border);
+		background: #fff;
+		font-family: inherit;
+		font-size: 14px;
+		color: var(--ink);
+	}
+	#search:focus { outline: none; border-color: var(--blue); box-shadow: 0 0 0 3px rgba(0, 78, 171, 0.12); }
+	#result-count { font-size: 13px; color: var(--muted); font-weight: 600; white-space: nowrap; }
+
+	.table-card {
+		background: #fff;
+		border: 1px solid var(--border);
+		border-radius: 12px;
 		overflow: hidden;
 	}
-	th, td {
-		text-align: left;
-		padding: 12px 14px;
-		font-size: 13px;
-		border-bottom: 1px solid #21252f;
-		vertical-align: top;
-	}
+	.table-scroll { overflow-x: auto; }
+	table { width: 100%; border-collapse: collapse; min-width: 720px; }
+	th, td { text-align: left; padding: 13px 16px; font-size: 13.5px; border-bottom: 1px solid var(--border); vertical-align: top; }
 	th {
-		background: #10131a;
-		color: #aab0bc;
+		background: #fafbfd;
+		color: var(--muted);
 		text-transform: uppercase;
 		font-size: 11px;
-		letter-spacing: 0.04em;
+		font-weight: 800;
+		letter-spacing: 0.05em;
 	}
-	tr:last-child td { border-bottom: none; }
-	td.msg { max-width: 320px; white-space: pre-wrap; color: #cbd1db; }
-	td.date { white-space: nowrap; color: #aab0bc; }
-	a.mail, a.tel { color: #60a5fa; text-decoration: none; }
-	.empty { color: #aab0bc; padding: 40px; text-align: center; }
+	tbody tr { transition: background 0.1s ease; }
+	tbody tr:hover { background: var(--blue-tint); }
+	tbody tr:last-child td { border-bottom: none; }
+	td.date { white-space: nowrap; color: var(--muted); font-weight: 600; }
+	td.name { font-weight: 700; }
+	td.msg { max-width: 300px; white-space: pre-wrap; color: #3a4452; }
+	.badge-today {
+		display: inline-block;
+		background: var(--green-tint);
+		color: var(--green);
+		font-size: 10.5px;
+		font-weight: 800;
+		padding: 2px 8px;
+		border-radius: 999px;
+		margin-left: 8px;
+		vertical-align: middle;
+	}
+	a.contact-link {
+		display: inline-flex;
+		align-items: center;
+		gap: 5px;
+		color: var(--blue);
+		text-decoration: none;
+		font-weight: 600;
+	}
+	a.contact-link:hover { text-decoration: underline; }
+
+	.state { padding: 60px 20px; text-align: center; color: var(--muted); }
+	.state.error { color: #b3261e; }
+	.spinner {
+		width: 26px; height: 26px; margin: 0 auto 14px;
+		border: 3px solid var(--border); border-top-color: var(--blue);
+		border-radius: 50%; animation: spin 0.7s linear infinite;
+	}
+	@keyframes spin { to { transform: rotate(360deg); } }
+
+	@media (max-width: 640px) {
+		header { padding: 14px 16px; }
+		main { padding: 20px 14px 50px; }
+		.brand-text .title { font-size: 13.5px; }
+	}
 </style>
 </head>
 <body>
 <header>
-	<h1>Clientes registrados</h1>
+	<div class="brand">
+		<img src="/wp-content/themes/Franco/images/site-logo.png" alt="Franco Muñoz Law Firm" />
+		<div class="brand-text">
+			<div class="title">Panel de clientes</div>
+			<div class="subtitle">Franco Muñoz Law Firm</div>
+		</div>
+	</div>
 	<button id="logout-btn">Cerrar sesión</button>
 </header>
 <main>
-	<div id="status">Cargando...</div>
-	<div id="table-wrap"></div>
+	<div class="stats">
+		<div class="stat-card">
+			<div class="label">Total de registros</div>
+			<div class="value" id="stat-total">—</div>
+		</div>
+		<div class="stat-card accent">
+			<div class="label">Hoy</div>
+			<div class="value" id="stat-today">—</div>
+		</div>
+		<div class="stat-card accent">
+			<div class="label">Esta semana</div>
+			<div class="value" id="stat-week">—</div>
+		</div>
+	</div>
+
+	<div class="toolbar">
+		<div class="search-wrap">
+			<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+				<circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/>
+			</svg>
+			<input type="text" id="search" placeholder="Buscar por nombre, correo o teléfono..." />
+		</div>
+		<div id="result-count"></div>
+	</div>
+
+	<div class="table-card">
+		<div id="content"><div class="state"><div class="spinner"></div>Cargando registros...</div></div>
+	</div>
 </main>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 <script src="/js/supabase-config.js"></script>
 <script>
 	var client = window.supabase.createClient(window.SUPABASE_URL, window.SUPABASE_PUBLISHABLE_KEY);
-	var statusEl = document.getElementById("status");
-	var wrapEl = document.getElementById("table-wrap");
+	var contentEl = document.getElementById("content");
+	var searchEl = document.getElementById("search");
+	var countEl = document.getElementById("result-count");
+	var allLeads = [];
 
 	function escapeHtml(str) {
 		var div = document.createElement("div");
@@ -85,9 +204,67 @@
 		return div.innerHTML;
 	}
 
+	function isSameDay(a, b) {
+		return a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth() && a.getDate() === b.getDate();
+	}
+
 	function formatDate(iso) {
 		var d = new Date(iso);
 		return d.toLocaleString("es-MX", { dateStyle: "medium", timeStyle: "short" });
+	}
+
+	function renderStats(rows) {
+		var now = new Date();
+		var weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+		var today = rows.filter(function (r) { return isSameDay(new Date(r.created_at), now); }).length;
+		var week = rows.filter(function (r) { return new Date(r.created_at) >= weekAgo; }).length;
+		document.getElementById("stat-total").textContent = rows.length;
+		document.getElementById("stat-today").textContent = today;
+		document.getElementById("stat-week").textContent = week;
+	}
+
+	function renderTable(rows) {
+		countEl.textContent = rows.length + (rows.length === 1 ? " resultado" : " resultados");
+
+		if (!rows.length) {
+			contentEl.innerHTML = '<div class="state">No se encontraron registros.</div>';
+			return;
+		}
+
+		var now = new Date();
+		var html = "<div class=\"table-scroll\"><table><thead><tr>" +
+			"<th>Fecha</th><th>Nombre</th><th>Correo</th><th>Teléfono</th><th>Mensaje</th><th>Página</th>" +
+			"</tr></thead><tbody>";
+
+		rows.forEach(function (r) {
+			var created = new Date(r.created_at);
+			var todayBadge = isSameDay(created, now) ? '<span class="badge-today">HOY</span>' : "";
+			html += "<tr>" +
+				'<td class="date">' + escapeHtml(formatDate(r.created_at)) + todayBadge + "</td>" +
+				'<td class="name">' + escapeHtml(r.name) + "</td>" +
+				'<td><a class="contact-link" href="mailto:' + escapeHtml(r.email) + '">' + escapeHtml(r.email) + "</a></td>" +
+				'<td><a class="contact-link" href="tel:' + escapeHtml(r.phone) + '">' + escapeHtml(r.phone) + "</a></td>" +
+				'<td class="msg">' + escapeHtml(r.message) + "</td>" +
+				"<td>" + escapeHtml(r.source_page) + "</td>" +
+				"</tr>";
+		});
+
+		html += "</tbody></table></div>";
+		contentEl.innerHTML = html;
+	}
+
+	function applyFilter() {
+		var q = searchEl.value.trim().toLowerCase();
+		if (!q) {
+			renderTable(allLeads);
+			return;
+		}
+		var filtered = allLeads.filter(function (r) {
+			return (r.name || "").toLowerCase().indexOf(q) !== -1 ||
+				(r.email || "").toLowerCase().indexOf(q) !== -1 ||
+				(r.phone || "").toLowerCase().indexOf(q) !== -1;
+		});
+		renderTable(filtered);
 	}
 
 	function loadLeads() {
@@ -97,32 +274,16 @@
 			.order("created_at", { ascending: false })
 			.then(function (res) {
 				if (res.error) {
-					statusEl.textContent = "Error al cargar: " + res.error.message;
+					contentEl.innerHTML = '<div class="state error">Error al cargar: ' + escapeHtml(res.error.message) + "</div>";
 					return;
 				}
-				var rows = res.data || [];
-				statusEl.textContent = rows.length + " registro(s)";
-				if (!rows.length) {
-					wrapEl.innerHTML = '<div class="empty">Todavía no hay clientes registrados.</div>';
-					return;
-				}
-				var html = "<table><thead><tr>" +
-					"<th>Fecha</th><th>Nombre</th><th>Correo</th><th>Teléfono</th><th>Mensaje</th><th>Página</th>" +
-					"</tr></thead><tbody>";
-				rows.forEach(function (r) {
-					html += "<tr>" +
-						'<td class="date">' + escapeHtml(formatDate(r.created_at)) + "</td>" +
-						"<td>" + escapeHtml(r.name) + "</td>" +
-						'<td><a class="mail" href="mailto:' + escapeHtml(r.email) + '">' + escapeHtml(r.email) + "</a></td>" +
-						'<td><a class="tel" href="tel:' + escapeHtml(r.phone) + '">' + escapeHtml(r.phone) + "</a></td>" +
-						'<td class="msg">' + escapeHtml(r.message) + "</td>" +
-						"<td>" + escapeHtml(r.source_page) + "</td>" +
-						"</tr>";
-				});
-				html += "</tbody></table>";
-				wrapEl.innerHTML = html;
+				allLeads = res.data || [];
+				renderStats(allLeads);
+				renderTable(allLeads);
 			});
 	}
+
+	searchEl.addEventListener("input", applyFilter);
 
 	client.auth.getSession().then(function (res) {
 		if (!res.data || !res.data.session) {
