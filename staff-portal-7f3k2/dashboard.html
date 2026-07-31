@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="robots" content="noindex, nofollow" />
+<title>Clientes registrados</title>
+<style>
+	* { box-sizing: border-box; }
+	body {
+		margin: 0;
+		background: #0f1115;
+		font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+		color: #e5e7eb;
+	}
+	header {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		padding: 18px 28px;
+		border-bottom: 1px solid #262b36;
+	}
+	header h1 { font-size: 18px; margin: 0; }
+	#logout-btn {
+		background: transparent;
+		border: 1px solid #2c313d;
+		color: #aab0bc;
+		padding: 8px 14px;
+		border-radius: 6px;
+		cursor: pointer;
+		font-size: 13px;
+	}
+	#logout-btn:hover { border-color: #f87171; color: #f87171; }
+	main { padding: 24px 28px; }
+	#status { color: #aab0bc; font-size: 14px; margin-bottom: 16px; }
+	table {
+		width: 100%;
+		border-collapse: collapse;
+		background: #171a21;
+		border: 1px solid #262b36;
+		border-radius: 8px;
+		overflow: hidden;
+	}
+	th, td {
+		text-align: left;
+		padding: 12px 14px;
+		font-size: 13px;
+		border-bottom: 1px solid #21252f;
+		vertical-align: top;
+	}
+	th {
+		background: #10131a;
+		color: #aab0bc;
+		text-transform: uppercase;
+		font-size: 11px;
+		letter-spacing: 0.04em;
+	}
+	tr:last-child td { border-bottom: none; }
+	td.msg { max-width: 320px; white-space: pre-wrap; color: #cbd1db; }
+	td.date { white-space: nowrap; color: #aab0bc; }
+	a.mail, a.tel { color: #60a5fa; text-decoration: none; }
+	.empty { color: #aab0bc; padding: 40px; text-align: center; }
+</style>
+</head>
+<body>
+<header>
+	<h1>Clientes registrados</h1>
+	<button id="logout-btn">Cerrar sesión</button>
+</header>
+<main>
+	<div id="status">Cargando...</div>
+	<div id="table-wrap"></div>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="/js/supabase-config.js"></script>
+<script>
+	var client = window.supabase.createClient(window.SUPABASE_URL, window.SUPABASE_PUBLISHABLE_KEY);
+	var statusEl = document.getElementById("status");
+	var wrapEl = document.getElementById("table-wrap");
+
+	function escapeHtml(str) {
+		var div = document.createElement("div");
+		div.textContent = str == null ? "" : str;
+		return div.innerHTML;
+	}
+
+	function formatDate(iso) {
+		var d = new Date(iso);
+		return d.toLocaleString("es-MX", { dateStyle: "medium", timeStyle: "short" });
+	}
+
+	function loadLeads() {
+		client
+			.from("leads")
+			.select("*")
+			.order("created_at", { ascending: false })
+			.then(function (res) {
+				if (res.error) {
+					statusEl.textContent = "Error al cargar: " + res.error.message;
+					return;
+				}
+				var rows = res.data || [];
+				statusEl.textContent = rows.length + " registro(s)";
+				if (!rows.length) {
+					wrapEl.innerHTML = '<div class="empty">Todavía no hay clientes registrados.</div>';
+					return;
+				}
+				var html = "<table><thead><tr>" +
+					"<th>Fecha</th><th>Nombre</th><th>Correo</th><th>Teléfono</th><th>Mensaje</th><th>Página</th>" +
+					"</tr></thead><tbody>";
+				rows.forEach(function (r) {
+					html += "<tr>" +
+						'<td class="date">' + escapeHtml(formatDate(r.created_at)) + "</td>" +
+						"<td>" + escapeHtml(r.name) + "</td>" +
+						'<td><a class="mail" href="mailto:' + escapeHtml(r.email) + '">' + escapeHtml(r.email) + "</a></td>" +
+						'<td><a class="tel" href="tel:' + escapeHtml(r.phone) + '">' + escapeHtml(r.phone) + "</a></td>" +
+						'<td class="msg">' + escapeHtml(r.message) + "</td>" +
+						"<td>" + escapeHtml(r.source_page) + "</td>" +
+						"</tr>";
+				});
+				html += "</tbody></table>";
+				wrapEl.innerHTML = html;
+			});
+	}
+
+	client.auth.getSession().then(function (res) {
+		if (!res.data || !res.data.session) {
+			window.location.href = "login.html";
+			return;
+		}
+		loadLeads();
+	});
+
+	document.getElementById("logout-btn").addEventListener("click", function () {
+		client.auth.signOut().then(function () {
+			window.location.href = "login.html";
+		});
+	});
+</script>
+</body>
+</html>
