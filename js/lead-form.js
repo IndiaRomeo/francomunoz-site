@@ -1,8 +1,4 @@
 (function () {
-	function isLeadForm(form) {
-		return form && form.tagName === "FORM" && /^wpforms-form-(28|390)$/.test(form.id);
-	}
-
 	function getClient() {
 		if (!window.supabase || !window.SUPABASE_URL || !window.SUPABASE_PUBLISHABLE_KEY) {
 			return null;
@@ -36,7 +32,7 @@
 	}
 
 	function submitLead(form) {
-		if (form._leadFormSubmitting) return;
+		if (!form || form._leadFormSubmitting) return;
 
 		var client = getClient();
 		if (!client) {
@@ -86,34 +82,14 @@
 			});
 	}
 
-	// WPForms binds its own click handler directly to the submit button (not
-	// a "submit" listener on the form), so it must be intercepted here, in
-	// the capture phase, before that handler ever runs.
-	document.addEventListener(
-		"click",
-		function (event) {
-			var btn = event.target.closest && event.target.closest('button[type="submit"], input[type="submit"]');
-			if (!btn) return;
-			var form = btn.closest("form");
-			if (!isLeadForm(form)) return;
-
-			event.preventDefault();
-			event.stopImmediatePropagation();
-			submitLead(form);
-		},
-		true
-	);
-
-	// Fallback for submission triggered without a button click (e.g. Enter key).
-	document.addEventListener(
-		"submit",
-		function (event) {
-			var form = event.target;
-			if (!isLeadForm(form)) return;
-			event.preventDefault();
-			event.stopImmediatePropagation();
-			submitLead(form);
-		},
-		true
-	);
+	// The actual click/submit interception happens as early as possible (see
+	// the inline guard script in <head>), since third-party plugin scripts
+	// (WPForms) also install a capture-phase click guard on window and would
+	// otherwise win the race if we only registered our listener down here.
+	// That guard queues any submission until this file is ready.
+	window.__lfHandleSubmit = submitLead;
+	if (window.__lfQueue && window.__lfQueue.length) {
+		var queued = window.__lfQueue.splice(0);
+		queued.forEach(submitLead);
+	}
 })();
