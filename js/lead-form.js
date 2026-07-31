@@ -35,12 +35,8 @@
 		return el ? el.value.trim() : "";
 	}
 
-	function handleSubmit(event) {
-		var form = event.target;
-		if (!isLeadForm(form)) return;
-
-		event.preventDefault();
-		event.stopImmediatePropagation();
+	function submitLead(form) {
+		if (form._leadFormSubmitting) return;
 
 		var client = getClient();
 		if (!client) {
@@ -60,6 +56,7 @@
 
 		var submitBtn = form.querySelector('button[type="submit"]');
 		var originalText = submitBtn ? submitBtn.textContent : "";
+		form._leadFormSubmitting = true;
 		if (submitBtn) {
 			submitBtn.disabled = true;
 			submitBtn.textContent = "Enviando...";
@@ -75,6 +72,7 @@
 				source_page: window.location.pathname,
 			})
 			.then(function (res) {
+				form._leadFormSubmitting = false;
 				if (submitBtn) {
 					submitBtn.disabled = false;
 					submitBtn.textContent = originalText;
@@ -88,5 +86,34 @@
 			});
 	}
 
-	document.addEventListener("submit", handleSubmit, true);
+	// WPForms binds its own click handler directly to the submit button (not
+	// a "submit" listener on the form), so it must be intercepted here, in
+	// the capture phase, before that handler ever runs.
+	document.addEventListener(
+		"click",
+		function (event) {
+			var btn = event.target.closest && event.target.closest('button[type="submit"], input[type="submit"]');
+			if (!btn) return;
+			var form = btn.closest("form");
+			if (!isLeadForm(form)) return;
+
+			event.preventDefault();
+			event.stopImmediatePropagation();
+			submitLead(form);
+		},
+		true
+	);
+
+	// Fallback for submission triggered without a button click (e.g. Enter key).
+	document.addEventListener(
+		"submit",
+		function (event) {
+			var form = event.target;
+			if (!isLeadForm(form)) return;
+			event.preventDefault();
+			event.stopImmediatePropagation();
+			submitLead(form);
+		},
+		true
+	);
 })();
